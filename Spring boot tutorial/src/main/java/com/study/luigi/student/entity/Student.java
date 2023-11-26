@@ -1,23 +1,41 @@
-package com.study.luigi.student;
+package com.study.luigi.student.entity;
+
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.Period;
 
+@Entity
+@Table(name = "student")
 public class Student {
+    @Id
+    @SequenceGenerator(
+            name = "student_sequence",
+            sequenceName = "student_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+                    generator = "student_sequence"
+    )
+    @Column(name = "sequence")
     private Long id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "email")
     private String email;
+    @Column(name = "birth_date")
     private LocalDate birthDate;
+    @Transient
     private Integer age;
 
     public Student() {
     }
 
-    public Student(Long id, String name, String email, LocalDate birthDate, Integer age) {
+    public Student(Long id, String name, String email, LocalDate birthDate) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.birthDate = birthDate;
-        this.age = age;
     }
 
     public Student(String name, String email, LocalDate birthDate, Integer age) {
@@ -60,7 +78,7 @@ public class Student {
     }
 
     public Integer getAge() {
-        return age;
+        return Period.between(birthDate, LocalDate.now()).getYears();
     }
 
     public void setAge(Integer age) {

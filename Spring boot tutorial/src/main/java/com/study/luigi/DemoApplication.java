@@ -1,6 +1,6 @@
 package com.study.luigi;
 
-import com.study.luigi.student.Student;
+import com.study.luigi.student.entity.Student;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +21,6 @@ public class DemoApplication {
 	//Demo
 	@GetMapping
 	public List<Student> hello(){
-		return List.of(new Student(1L, "Luigi", "luigi@gmail.com", LocalDate.of(2004,01,06), 19));
+		return List.of(new Student(1L, "Luigi", "luigi@gmail.com", LocalDate.of(2004,01,06)));
 	}
 }

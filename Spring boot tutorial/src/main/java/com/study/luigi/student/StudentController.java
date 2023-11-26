@@ -1,9 +1,12 @@
 package com.study.luigi.student;
 
+import com.study.luigi.student.entity.Student;
+import jakarta.transaction.Transactional;
+import jakarta.websocket.server.PathParam;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,7 +21,24 @@ public class StudentController {
     }
 
     @GetMapping
-    public List<Student> getStudents() {
+    public ResponseEntity<List<Student>> getStudents() {
         return studentService.getStudents();
+    }
+
+    @PostMapping
+    public ResponseEntity insertStudent(@RequestBody Student student) {
+        return this.studentService.addNewStudent(student);
+    }
+
+    @PutMapping(path = "/{studentId}")
+    public ResponseEntity updateStudent(@PathVariable("studentId") Long id,
+                              @RequestParam(required = false) String name,
+                              @RequestParam(required = false) String email) {
+        return this.studentService.updateStudent(id, name, email);
+    }
+
+    @DeleteMapping(path = "/{studentId}")
+    public ResponseEntity deleteStudent(@PathVariable("studentId") Long id) {
+        return studentService.deleteStudent(id);
     }
 }
