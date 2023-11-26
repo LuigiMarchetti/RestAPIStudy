@@ -14,7 +14,7 @@ public class Student {
             sequenceName = "student_sequence",
             allocationSize = 1
     )
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+    @GeneratedValue(strategy = GenerationType.IDENTITY,
                     generator = "student_sequence"
     )
     @Column(name = "sequence")

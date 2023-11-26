@@ -32,7 +32,11 @@ public class StudentService {
         if (student.getEmail() == null || student.getEmail().isEmpty()){
             return ResponseEntity.badRequest().body("Email is mandatory");
         }
-        //Boolean studentAlreadyRegistered = studentRepository.findStudentByEmail();
+        Optional<Student> emailIsAlreadyRegistered = studentRepository.findStudentByEmail(student.getEmail());
+
+        if (emailIsAlreadyRegistered.isPresent()) {
+            return ResponseEntity.badRequest().body("This email is already registered");
+        }
 
         studentRepository.save(student);
         return ResponseEntity.ok(null);
