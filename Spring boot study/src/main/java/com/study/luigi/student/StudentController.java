@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "api/v1/student")
+@RequestMapping(path = "v1/students")
 public class StudentController {
     private final StudentService studentService;
 
@@ -18,8 +18,17 @@ public class StudentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Student>> getStudents() {
-        return studentService.getStudents();
+    public ResponseEntity<List<Student>> getStudents(
+            @RequestParam(value = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(value = "pageLimit", defaultValue = "10", required = false) int pageLimit
+    ) {
+        return studentService.getStudents(page, pageLimit);
+    }
+
+
+    @GetMapping("/{studentId}")
+    public ResponseEntity<Student> getStudent(@PathVariable("studentId") Long id) {
+        return studentService.getStudent(id);
     }
 
     @PostMapping
