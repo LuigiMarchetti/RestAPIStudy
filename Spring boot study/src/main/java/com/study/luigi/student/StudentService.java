@@ -1,10 +1,14 @@
 package com.study.luigi.student;
 
 import com.study.luigi.student.entity.Student;
+import com.study.luigi.student.utils.MessageDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriBuilder;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,7 +26,7 @@ public class StudentService {
     public ResponseEntity<List<Student>> getStudents() {
         List<Student> studentList = studentRepository.findAll();
         if (studentList.isEmpty()){
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.noContent().build();
         }
 
         return ResponseEntity.ok().body(studentList);
@@ -30,33 +34,39 @@ public class StudentService {
 
     public ResponseEntity addNewStudent(Student student){
         if (student.getEmail() == null || student.getEmail().isEmpty()){
-            return ResponseEntity.badRequest().body("Email is mandatory");
+            return ResponseEntity.badRequest().body(new MessageDTO("Email is mandatory"));
         }
         Optional<Student> emailIsAlreadyRegistered = studentRepository.findStudentByEmail(student.getEmail());
 
         if (emailIsAlreadyRegistered.isPresent()) {
-            return ResponseEntity.badRequest().body("This email is already registered");
+            return ResponseEntity.badRequest().body(new MessageDTO("This email is already registered"));
         }
 
         studentRepository.save(student);
-        return ResponseEntity.ok(null);
+        var uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(student.getId())
+                .toUri();
+
+        return ResponseEntity.created(uri).body(student);
     }
 
     public ResponseEntity deleteStudent(Long id) {
         Boolean studentExist = studentRepository.existsById(id);
 
         if (!studentExist) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageDTO("Student was not found"));
         }
         studentRepository.deleteById(id);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.noContent().build();
     }
 
     @Transactional
     public ResponseEntity updateStudent(Long id, String name, String email) {
         Optional<Student> studentExists = studentRepository.findById(id);
         if (!studentExists.isPresent()) {
-            return ResponseEntity.badRequest().body("Student don't exist");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageDTO("Student was not found"));
         }
 
         Student student = studentExists.get();
@@ -70,6 +80,6 @@ public class StudentService {
             student.setEmail(email);
         }
 
-        return ResponseEntity.ok(null);
+        return ResponseEntity.noContent().build();
     }
 }
